@@ -6,7 +6,7 @@
 using TVector = std::vector<float>;
 
 inline float Dot(const TVector& a, const TVector& b) {
-	float sum = 0.0f;
+    float sum = 0.0f;
     for (size_t i = 0; i < a.size(); ++i) {
         sum += a[i] * b[i];
     }
@@ -26,8 +26,8 @@ inline void Saxpy(TVector& a, float coeff, const TVector& b) {
 }
 
 inline void Unit(TVector& a) {
-	const float len = sqrt(Dot(a, a));
-	if (len == 0.0f) {
+    const float len = sqrt(Dot(a, a));
+    if (len == 0.0f) {
         return;
     }
 

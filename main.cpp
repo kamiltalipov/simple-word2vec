@@ -5,25 +5,25 @@
 #include <string>
 
 std::vector<TSentencePtr> ReadSentences(const std::string& fileName, size_t maxSentenceLen) {
-	std::vector<TSentencePtr> sentences;
+    std::vector<TSentencePtr> sentences;
 
     size_t count = 0;
 
-	TSentencePtr sentence = std::make_shared<TSentence>();
-	std::ifstream in(fileName);
-	std::string s;
-	while (in >> s) {
-		++count;
-		sentence->Tokens.push_back(std::move(s));
-		if (count == maxSentenceLen) {
-			count = 0;
-			sentences.push_back(std::move(sentence));
-			sentence = std::make_shared<TSentence>();
-		}
-	}
+    TSentencePtr sentence = std::make_shared<TSentence>();
+    std::ifstream in(fileName);
+    std::string s;
+    while (in >> s) {
+        ++count;
+        sentence->Tokens.push_back(std::move(s));
+        if (count == maxSentenceLen) {
+            count = 0;
+            sentences.push_back(std::move(sentence));
+            sentence = std::make_shared<TSentence>();
+        }
+    }
 
-	if (!sentence->Tokens.empty()) {
-		sentences.push_back(std::move(sentence));
+    if (!sentence->Tokens.empty()) {
+        sentences.push_back(std::move(sentence));
     }
 
     return sentences;
@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
     auto cmdParser = GetCmdParser();
     cmdParser.parse_check(argc, argv);
 
-	bool train = cmdParser.exist("train");
+    bool train = cmdParser.exist("train");
     bool test = cmdParser.exist("test");
-	if (train) {
-		auto sentences = ReadSentences(cmdParser.get<std::string>("input"),
+    if (train) {
+        auto sentences = ReadSentences(cmdParser.get<std::string>("input"),
                                        cmdParser.get<std::size_t>("max_sentence_len"));
         TModelConfig modelConfig;
         modelConfig.LayerSize = cmdParser.get<size_t>("layer_size");
@@ -70,30 +70,30 @@ int main(int argc, char *argv[])
         modelConfig.TrainSentenceMaxSize = cmdParser.get<size_t>("train_max_size");
         modelConfig.TrainSentenceMaxExp = cmdParser.get<float>("train_max_exp");
 
-	    TModel model(modelConfig);
+        TModel model(modelConfig);
         model.Init(sentences);
-		model.Train(sentences);
-		model.Save(cmdParser.get<std::string>("output"));
-	}
+        model.Train(sentences);
+        model.Save(cmdParser.get<std::string>("output"));
+    }
 
-	if (test) {
-		TModel model = TModel::Load(cmdParser.get<std::string>("output"));
-		while (true) {
-			std::string str;
-			std::cout << std::endl << "Input(:q to break):";
-			std::cin >> str;
-			if (str == ":q") {
+    if (test) {
+        TModel model = TModel::Load(cmdParser.get<std::string>("output"));
+        while (true) {
+            std::string str;
+            std::cout << std::endl << "Input(:q to break):";
+            std::cin >> str;
+            if (str == ":q") {
                 break;
             }
-			auto res = model.GetMostSimilar(str, 10);
-			size_t idx = 0;
-			for (const auto& v : res) {
-				std::cout << idx << ' ' << v.first << ' ' << v.second << std::endl;
-			    ++idx;
+            auto res = model.GetMostSimilar(str, 10);
+            size_t idx = 0;
+            for (const auto& v : res) {
+                std::cout << idx << ' ' << v.first << ' ' << v.second << std::endl;
+                ++idx;
             }
-		}
-	}
+        }
+    }
 
-	return 0;
+    return 0;
 }
 
